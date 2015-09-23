@@ -15,7 +15,7 @@ var handleHtml = function(html) {
             dom = new Function(js)();
             readFeed(dom);
         } catch(e) {
-            console.log(e);
+            //console.log(e);
         }
     });
 }
@@ -24,42 +24,36 @@ var readFeed = function(html) {
     var $ = cheerio.load(html, {decodeEntities: false});
     $('.WB_cardwrap', '.WB_feed').each(function(index, el) {
         var $el = $(el);
-        var author = $el.find('.WB_detail .WB_info a').html();
-        var content = $el.find('.WB_detail .WB_text').html();
-        console.log(author, content);
+        var author = $el.find('.WB_detail .WB_info a').html().trim();
+        var content = $el.find('.WB_detail .WB_text').html().trim();
+        var forward = $el.find('.WB_feed_handle li span[node-type="forward_btn_text"]').html().trim().replace('转发', '');
+        var comment = $el.find('.WB_feed_handle li span[node-type="comment_btn_text"]').html().trim().replace('评论', '');
+        var like = $el.find('.WB_feed_handle li span[node-type="like_status"] em').html().trim();
+        console.log('作者: ' + author);
+        console.log('内容: ' + content);
+        console.log('转发: ' + forward + ' 评论: ' + comment +' 点赞: ' + like);
+        console.log('');
+        console.log('');
+        console.log('');
     });
 }
 
-var wb = fs.readFileSync('./wb.html', 'utf8');
-handleHtml(wb);
-
-
-var url = 'http://weibo.com/u/5642637931/home';
-
-
 var get = function() {
-    var file = fs.createWriteStream('./wb.html');
     var req = http
-        .get(url)
-        .set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8')
-        .set('Accept-Encoding', 'gzip, deflate, sdch')
+        .get(config.url)
         .set('Cookie', config.cookie)
         .set('Host', 'weibo.com')
-        .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2513.0 Safari/537.36')
-    req.pipe(file)
-        //.end(function(err, res) {
-        //    if (err) {
-        //        console.log('error ' + err);
-        //        return;
-        //    }
-        //    //handleHtml(res.text);
-        //})
-    req.on('error', function(err) {
-        console.log(err);
-    });
-
+        .end(function(err, res) {
+            if (err) {
+                console.log('error ' + err);
+                return;
+            }
+            handleHtml(res.text);
+        })
 }
 
 var send = function(text) {
     
 }
+
+get();
