@@ -53,7 +53,27 @@ var get = function() {
 }
 
 var send = function(text) {
-    
+    var l = config.sUrl + new Date().getTime();
+    var req = http
+        .post(l)
+        .set('Cookie', config.cookie)
+        .set('Host', 'weibo.com')
+        .set('Referer', 'http://weibo.com/')
+        .send('location=v6_content_home')
+        .send('style_type=1')
+        .send('text=' + text)
+        .send('rank=0')
+        .send('module=stissue')
+        .send('pub_type=dialog')
+        .send('_t=0')
+        .end(function(err, res) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(res.text);
+            }
+        });
 }
 
-get();
+//get();
+send('中秋节快乐');
