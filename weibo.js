@@ -75,5 +75,10 @@ var send = function(text) {
         });
 }
 
-//get();
-send('中秋节快乐');
+var saveFeed = function(text) {
+    fs.writeFileSync('feed.text', text);
+}
+
+get();
+//send('中秋节快乐');
+
